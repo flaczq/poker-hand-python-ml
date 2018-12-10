@@ -103,11 +103,11 @@ def main():
     testing_labels = testing_data[:, -1]
 
     # SCALING
-    print('Scaling...')
-    scaler = StandardScaler()
-    scaler.fit(training_features)
-    training_features = scaler.transform(training_features)
-    testing_features = scaler.transform(testing_features)
+    # print('Scaling...')
+    # scaler = StandardScaler()
+    # scaler.fit(training_features)
+    # training_features = scaler.transform(training_features)
+    # testing_features = scaler.transform(testing_features)
 
     # TRAINING
     print('Training...')
@@ -122,8 +122,9 @@ def main():
     # SHOWING FIRST 10 PREDICTIONS
     for i, testing_feature in enumerate(testing_features[:10]):
         correct = prediction[i] == testing_labels[i]
-        # print(f'#{i+1}: {translate_features(testing_feature)} -> {translate_class(prediction[i])} [{correct}]')
         print(
+			f'#{i+1}: {translate_features(testing_feature)} -> {translate_class(prediction[i])} [{correct}]')
+        # print(
             f'#{i+1}: {testing_feature} -> {prediction[i]} [{correct}]')
     print('Accuracy: {:.4%}'.format(
         accuracy_score(testing_labels, prediction)))
