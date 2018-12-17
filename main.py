@@ -1,8 +1,16 @@
 import numpy as np
+import random
 from sklearn.metrics import accuracy_score, log_loss
-from sklearn.tree import DecisionTreeClassifier, export_graphviz
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 
 def translate_features(num_features):
@@ -74,6 +82,12 @@ def start():
     print('--  MACHINE LEARNING --\n')
 
 
+def stop():
+    print('\n--  MACHINE LEARNING --')
+    print('----- POKER HANDS -----')
+    print('--------- END ---------')
+
+
 def main():
     '''
     1)  Card #1 suit
@@ -111,35 +125,46 @@ def main():
 
     # TRAINING
     print('Training...')
-    classifier = DecisionTreeClassifier()
-    classifier = classifier.fit(training_features, training_labels)
+    names = [
+        # 'KNeighborsClassifier(3)',
+        # 'SVC(gamma=2, C=1)',
+        # 'GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True)',
+        # 'DecisionTreeClassifier(max_depth=5)',
+        # 'RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1)',
+        # 'MLPClassifier(alpha=1)',
+        'AdaBoostClassifier',
+        # 'GaussianNB',
+        # 'QuadraticDiscriminantAnalysis'
+    ]
+    classifiers = [
+        # KNeighborsClassifier(3),
+        # SVC(gamma=2, C=1),
+        # GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
+        # DecisionTreeClassifier(max_depth=5),
+        # RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
+        # MLPClassifier(alpha=1),
+        AdaBoostClassifier(),
+        # GaussianNB(),
+        # QuadraticDiscriminantAnalysis()
+    ]
+    for clsIndex in range(len(classifiers)):
+        classifier = classifiers[clsIndex].fit(
+            training_features, training_labels)
 
-    # TESTING
-    print('Testing...\n')
-    prediction = classifier.predict(testing_features)
-    prediction_proba = classifier.predict_proba(testing_features)
+        # TESTING
+        print(f'{names[clsIndex]}: Testing...\n')
+        prediction = classifier.predict(testing_features)
+        prediction_proba = classifier.predict_proba(testing_features)
 
-    # SHOWING FIRST 10 PREDICTIONS
-    for i, testing_feature in enumerate(testing_features[:10]):
-        correct = prediction[i] == testing_labels[i]
-        print(
-			f'#{i+1}: {translate_features(testing_feature)} -> {translate_class(prediction[i])} [{correct}]')
-        # print(
-            f'#{i+1}: {testing_feature} -> {prediction[i]} [{correct}]')
-    print('Accuracy: {:.4%}'.format(
-        accuracy_score(testing_labels, prediction)))
-    print('Log loss: {}'.format(log_loss(testing_labels, prediction_proba)))
+        # SHOWING 10 RANDOM PREDICTIONS
+        for i in random.sample(range(len(testing_features)), 10):
+            correct = prediction[i] == testing_labels[i]
+            print(
+                f'#{i}: {translate_features(testing_features[i])} -> {translate_class(prediction[i])} [{correct}]')
 
-    # DRAWING
-    # dot_file = open('./graph.dot', 'w')
-    # export_graphviz(classifier, out_file=dot_file)
-    # dot_file.close()
-
-
-def stop():
-    print('\n--  MACHINE LEARNING --')
-    print('----- POKER HANDS -----')
-    print('--------- END ---------')
+        print('Accuracy: {:.4%}'.format(
+            accuracy_score(testing_labels, prediction)))
+        print('Log loss: {}'.format(log_loss(testing_labels, prediction_proba)))
 
 
 start()
